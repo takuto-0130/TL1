@@ -1,7 +1,7 @@
 #include "BlenderLevelLoader.h"
 #include <fstream>
 
-#include "Object/LevelObject.h"
+#include "LevelObject.h"
 
 using json = nlohmann::json;
 
@@ -50,6 +50,16 @@ void BlenderLevelLoader::ObjectTraversal(LevelData* levelData, json& j, std::str
     for (json& object : j[contains])
     {
         assert(object.contains("type"));
+
+        // 無効化フラグが有効ならスキップ
+        if (object.contains("disable_flag"))
+        {
+            bool disabled = object["disable_flag"].get<bool>();
+            if (disabled)
+            {
+                continue;
+            }
+        }
 
         // 種類を取得
         std::string type = object["type"].get<std::string>();

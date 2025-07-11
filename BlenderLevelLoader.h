@@ -36,3 +36,5 @@ private:
 	std::string kBaseDirectoryName_;
 };
 
+// Blenderでデータを作る際は '-Y' から見る
+

@@ -51,6 +51,7 @@ class MYADDON_OT_export_scene(bpy.types.Operator, bpy_extras.io_utils.ExportHelp
             temp_str = indent + "CS %f %f %f"
             temp_str %= (object["collider_size"][0],object["collider_size"][1],object["collider_size"][2])
             self.write_and_print(file, temp_str)
+        
 
 
         self.write_and_print(file, indent + 'END')
@@ -117,6 +118,10 @@ class MYADDON_OT_export_scene(bpy.types.Operator, bpy_extras.io_utils.ExportHelp
             collider["center"] = object["collider_center"].to_list()
             collider["size"] = object["collider_size"].to_list()
             json_object["collider"] = collider
+
+        # カスタムプロパティ 'disable_flag'
+        if "disable_flag" in object:
+            json_object["disable_flag"] = object["disable_flag"]
 
         # 1個分のjsonオブジェクトを親オブジェクトに登録
         data_parent.append(json_object)
