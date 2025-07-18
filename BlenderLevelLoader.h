@@ -17,7 +17,15 @@ struct LevelData
 		Vector3 colliderSize = {};
 	};
 
+	struct PlayerSpawnData
+	{
+		Vector3 translation = {};
+		Vector3 rotation = {};
+	};
+
 	std::vector<ObjectData> objects;
+
+	std::vector<PlayerSpawnData> players;
 };
 
 class BlenderLevelLoader

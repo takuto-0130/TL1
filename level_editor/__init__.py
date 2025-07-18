@@ -26,6 +26,8 @@ from .collider import OBJECT_PT_collider
 from .draw_collider import DrawCollider
 from .add_disable_flag import MYADDON_OT_add_disable_flag
 from .add_disable_flag import OBJECT_PT_disable_flag
+from .spawn import MYADDON_OT_spawn_symbol_import
+from .spawn import MYADDON_OT_spawn_symbol_create
     
 # Blenderに登録するクラスリスト
 classes = (
@@ -39,6 +41,8 @@ classes = (
     OBJECT_PT_collider,
     MYADDON_OT_add_disable_flag,
     OBJECT_PT_disable_flag,
+    MYADDON_OT_spawn_symbol_import,
+    MYADDON_OT_spawn_symbol_create,
 )
 
 

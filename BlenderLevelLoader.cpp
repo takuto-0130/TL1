@@ -34,7 +34,6 @@ void BlenderLevelLoader::DataToObject(LevelData* data, std::vector<std::unique_p
     for (auto& objectData : data->objects)
     {
         std::string modelName = objectData.fileName + ".obj";
-        ModelManager::GetInstance()->LoadModel("Resources", modelName);
         std::unique_ptr<LevelObject> object = std::make_unique<LevelObject>();
         object->SetModelName(modelName);
         object->Init();
@@ -106,6 +105,30 @@ void BlenderLevelLoader::ObjectTraversal(LevelData* levelData, json& j, std::str
             {
                 //levelData->objects.reserve(LevelData);
                 ObjectTraversal(levelData, object, "children");
+            }
+        }
+        else if (type.compare("PlayerSpawn") == 0)
+        {
+            // 要素追加
+            levelData->players.emplace_back(LevelData::PlayerSpawnData{});
+            // 追加した要素の参照を得る
+            LevelData::PlayerSpawnData& data = levelData->players.back();
+
+            json& transform = object["transform"];
+            // 平行移動
+            if (transform.contains("translation") && transform["translation"].size() >= 3)
+            {
+                data.translation.x = static_cast<float>(transform["translation"][0]);
+                data.translation.y = static_cast<float>(transform["translation"][2]);
+                data.translation.z = static_cast<float>(transform["translation"][1]);
+            }
+
+            // 回転角
+            if (transform.contains("rotation") && transform["rotation"].size() >= 3)
+            {
+                data.rotation.x = static_cast<float>(transform["rotation"][0]);
+                data.rotation.y = static_cast<float>(transform["rotation"][2]);
+                data.rotation.z = static_cast<float>(transform["rotation"][1]);
             }
         }
     }
