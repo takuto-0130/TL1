@@ -16,16 +16,21 @@ struct LevelData
 		Vector3 colliderCenter = {};
 		Vector3 colliderSize = {};
 	};
-
 	struct PlayerSpawnData
 	{
 		Vector3 translation = {};
 		Vector3 rotation = {};
 	};
+	struct EnemySpawnData
+	{
+		std::string fileName = "";
+		Vector3 translation = {};
+		Vector3 rotation = {};
+	};
 
 	std::vector<ObjectData> objects;
-
 	std::vector<PlayerSpawnData> players;
+	std::vector<EnemySpawnData> enemies;
 };
 
 class BlenderLevelLoader

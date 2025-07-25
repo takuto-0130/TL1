@@ -1,5 +1,6 @@
 #include "BlenderLevelLoader.h"
 #include <fstream>
+#include <numbers>
 
 #include "LevelObject.h"
 
@@ -38,7 +39,12 @@ void BlenderLevelLoader::DataToObject(LevelData* data, std::vector<std::unique_p
         object->SetModelName(modelName);
         object->Init();
         object->SetPosition(objectData.translation);
-        object->SetRotation(objectData.rotation);
+        Vector3 rotation = {
+            objectData.rotation.x * (std::numbers::pi_v<float> / 180.0f),
+            objectData.rotation.y * (std::numbers::pi_v<float> / 180.0f) * (-1.0f),
+            objectData.rotation.z * (std::numbers::pi_v<float> / 180.0f),
+        };
+        object->SetRotation(rotation);
         object->SetScale(objectData.scaling);
         objects.push_back(std::move(object));
     }
@@ -113,6 +119,35 @@ void BlenderLevelLoader::ObjectTraversal(LevelData* levelData, json& j, std::str
             levelData->players.emplace_back(LevelData::PlayerSpawnData{});
             // 追加した要素の参照を得る
             LevelData::PlayerSpawnData& data = levelData->players.back();
+
+            json& transform = object["transform"];
+            // 平行移動
+            if (transform.contains("translation") && transform["translation"].size() >= 3)
+            {
+                data.translation.x = static_cast<float>(transform["translation"][0]);
+                data.translation.y = static_cast<float>(transform["translation"][2]);
+                data.translation.z = static_cast<float>(transform["translation"][1]);
+            }
+
+            // 回転角
+            if (transform.contains("rotation") && transform["rotation"].size() >= 3)
+            {
+                data.rotation.x = static_cast<float>(transform["rotation"][0]);
+                data.rotation.y = static_cast<float>(transform["rotation"][2]);
+                data.rotation.z = static_cast<float>(transform["rotation"][1]);
+            }
+        }
+        else if (type.compare("EnemySpawn") == 0)
+        {
+            // 要素追加
+            levelData->enemies.emplace_back(LevelData::EnemySpawnData{});
+            // 追加した要素の参照を得る
+            LevelData::EnemySpawnData& data = levelData->enemies.back();
+
+            if (object.contains("file_name"))
+            {
+                data.fileName = object["file_name"];
+            }
 
             json& transform = object["transform"];
             // 平行移動

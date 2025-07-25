@@ -28,6 +28,8 @@ from .add_disable_flag import MYADDON_OT_add_disable_flag
 from .add_disable_flag import OBJECT_PT_disable_flag
 from .spawn import MYADDON_OT_spawn_symbol_import
 from .spawn import MYADDON_OT_spawn_symbol_create
+from .spawn import MYADDON_OT_spawn_symbol_player
+from .spawn import MYADDON_OT_spawn_symbol_enemy
     
 # Blenderに登録するクラスリスト
 classes = (
@@ -43,6 +45,8 @@ classes = (
     OBJECT_PT_disable_flag,
     MYADDON_OT_spawn_symbol_import,
     MYADDON_OT_spawn_symbol_create,
+    MYADDON_OT_spawn_symbol_player,
+    MYADDON_OT_spawn_symbol_enemy,
 )
 
 
