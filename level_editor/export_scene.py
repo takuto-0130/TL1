@@ -96,17 +96,53 @@ class MYADDON_OT_export_scene(bpy.types.Operator, bpy_extras.io_utils.ExportHelp
 
         # オブジェクトのローカルトランスフォームから
         # 平行移動、回転、スケールを抽出
-        trans, rot, scale, = object.matrix_local.decompose()
-        # 回転を QuternionからEulerに変換
-        rot = rot.to_euler()
-        # ラジアンから度数法に変換
-        rot.x = math.degrees(rot.x)
-        rot.y = math.degrees(rot.y)
-        rot.z = math.degrees(rot.z)
+        trans, rot, scale = object.matrix_local.decompose()
+
+        if "type" in object:
+            if object["type"] == "EnemySpawn":
+                # Quaternion→Euler (ラジアン)
+                rot = rot.to_euler(object.rotation_mode)
+            elif object["type"] == "PlayerSpawn":
+                # Quaternion→Euler (ラジアン)
+                rot = rot.to_euler(object.rotation_mode)
+        else:
+            # Quaternion→Euler (ラジアン)
+            rot = rot.to_euler(object.rotation_mode)
+            # ラジアンのまま補正
+            rot.x += math.radians(90.0)
+            rot.y += math.radians(180.0)
+
+            # ラジアンの値を度数法に変換
+            rot_x = math.degrees(rot.x)
+            rot_y = math.degrees(rot.y)
+            rot_z = math.degrees(rot.z)
+
+            # 正規化 (-180°〜180° の範囲)
+            def normalize_angle(angle):
+                angle = angle % 360.0
+                if angle > 180.0:
+                    angle -= 360.0
+                return angle
+
+            def round_angle(angle, eps=1e-4):
+                if abs(angle) < eps:
+                    return 0.0
+                return angle
+
+            rot_x = round_angle(normalize_angle(rot_x))
+            rot_y = round_angle(normalize_angle(rot_y))
+            rot_z = round_angle(normalize_angle(rot_z))
+
         # トランスフォーム情報をディクショナリに登録
         transform = dict();
         transform["translation"] = (trans.x, trans.y, trans.z)
-        transform["rotation"] = (rot.x, rot.y, rot.z)
+        if "type" in object:
+            if object["type"] == "EnemySpawn":
+                transform["rotation"] = (rot.x, rot.y, rot.z)
+            elif object["type"] == "PlayerSpawn":
+                transform["rotation"] = (rot.x, rot.y, rot.z)
+        else:
+            transform["rotation"] = (rot_x, rot_y, rot_z)
         transform["scaling"] = (scale.x, scale.y, scale.z)
         # まとめて1個分のjsonオブジェクトに登録
         json_object["transform"] = transform

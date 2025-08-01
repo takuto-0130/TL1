@@ -30,6 +30,8 @@ from .spawn import MYADDON_OT_spawn_symbol_import
 from .spawn import MYADDON_OT_spawn_symbol_create
 from .spawn import MYADDON_OT_spawn_symbol_player
 from .spawn import MYADDON_OT_spawn_symbol_enemy
+from . import stage_edit
+from .import_scene import MYADDON_OT_import_scene
     
 # Blenderに登録するクラスリスト
 classes = (
@@ -47,6 +49,13 @@ classes = (
     MYADDON_OT_spawn_symbol_create,
     MYADDON_OT_spawn_symbol_player,
     MYADDON_OT_spawn_symbol_enemy,
+    stage_edit.OBJECT_OT_add_enemy,
+    stage_edit.OBJECT_OT_add_rail,
+    stage_edit.OBJECT_OT_export_stage,
+    stage_edit.OBJECT_OT_import_stage,
+    stage_edit.OBJECT_OT_toggle_curve,
+    stage_edit.OBJECT_PT_stage_panel,
+    MYADDON_OT_import_scene,
 )
 
 
@@ -64,7 +73,11 @@ def register():
 
     #3Dビューに描画関数を追加
     DrawCollider.handle = bpy.types.SpaceView3D.draw_handler_add(DrawCollider.draw_collider, (), "WINDOW", "POST_VIEW")
+    
+    # Stage Data Editor の曲線描画ハンドラ
+    stage_edit.disable_draw()  # 二重登録防止
     print("LevelEditor Enabled")
+
 
 # AddonDisabledCallback
 def unregister():
@@ -75,6 +88,7 @@ def unregister():
 
     #3Dビューから描画関数を削除
     bpy.types.SpaceView3D.draw_handler_remove(DrawCollider.handle, "WINDOW")
+    stage_edit.disable_draw()
     
     print("LevelEditor Disabled")
     
